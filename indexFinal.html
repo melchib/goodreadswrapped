@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href=”[https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap)” rel=”stylesheet”>
+  <title>Goodreads Wrapped</title>
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+      body {
+      margin: 0;
+      font-family: Georgia, serif;
+      color: #222;
+    }
+
+    #landing {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: opacity 0.8s ease;
+    }
+
+    #landing.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: rgba(21, 173, 255, 0.25) 0px 25px 50px -12px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      background: #d15497;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    
+    }
+    
+    #uploadBtn:hover {
+        background-color: #f585c1;
+        transform: scale(1.03)
+    }
+    #uploadBtn:active {
+        background-color: #fccae4;
+        transform: scale(1.07)
+    }
+
+    /* ---------- WRAPPED ---------- */
+    #wrapped {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .summary-card {
+    background: rgba(255, 255, 255, 0.718);
+    padding: 60px 60px;
+    border-radius: 16px;
+    box-shadow: rgba(205, 219, 255, 0.56) 0px 22px 70px 4px;
+    
+    }
+    #wrapped.visible {
+      opacity: 1;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .slide-content {
+      max-width: 1100px;
+      text-align: center;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    #slide-months .slide-content {
+      scroll-behavior: smooth;
+      height: calc(100vh - 8rem);
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+
+    #slide-months .slide-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #slide-months .slide-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    #nav-controls {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    #nav-controls button {
+      font-size: 20px;
+      padding: 10px 16px;
+      border-radius: 50%;
+      border: none;
+      background: #d15497;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    #nav-controls button:hover {
+      transform: scale(1.1);
+    }
+
+    .big-number {
+      font-size: 96px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 24px;
+      margin-top: 10px;
+      color: #555;
+    } 
+    /* ---------- MONTH GRID ---------- */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .month-card {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .month-card h3 {
+      grid-column: span 2;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .month-stat {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .month-stat .label {
+      font-size: 12px;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .month-stat .value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LANDING PAGE -->
+  <section id="landing">
+    <div class="upload-box">
+      <h1>Goodreads Wrapped</h1>
+      <p>Upload your Goodreads CSV to see your year in books.</p>
+      
+
+      <input type="file" id="csvFile" accept=".csv" />
+      <br>
+      <button id="uploadBtn">Generate Wrapped</button>
+      <br><br>
+      <a href="https://help.goodreads.com/s/article/How-do-I-import-or-export-my-books-1553870934590">instructions on how to access your goodreads CSV</a>
+      
+
+    </div>
+  </section>
+
+  <!-- WRAPPED PAGE -->
+  <section id="wrapped">
+
+    <section class="slide" id="slide-summary"></section>
+    <section class="slide" id="slide-bookends"></section>
+    <section class="slide" id="slide-peaks"></section>
+    <section class="slide" id="slide-ratings"></section>
+    <section class="slide" id="slide-five-stars"></section>
+    <section class="slide" id="slide-months"></section>
+  </section>
+  <div id="nav-controls">
+    <button id="prevBtn">go back</button>
+    <button id="nextBtn">continue</button>
+  </div>
+
+  <script>
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("csvFile");
+    const landing = document.getElementById("landing");
+    const wrapped = document.getElementById("wrapped");
+
+    uploadBtn.addEventListener("click", async () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please choose a CSV file.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const API_BASE = "http://127.0.0.1:8000"; // local for now
+      const response = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.detail || "Error");
+        return;
+      }
+
+      showWrapped(data);
+    });
+
+    function showWrapped(data) {
+      // Fade out landing
+      landing.classList.add("hidden");
+
+      setTimeout(() => {
+        landing.style.display = "none";
+        wrapped.classList.add("visible");
+
+        renderSummary(data.year_summary);
+        renderBookends(data.year_summary);
+        renderMonths(data.monthly_stats);
+        renderReadingPeaks(data)
+        renderRatingPeaks(data);
+        renderFiveStarBooks(data);
+
+        initSlides();
+      }, 800);
+    }
+
+function renderSummary(summary) {
+  document.getElementById("slide-summary").innerHTML = `
+    <div class="summary-card">
+        <div class="slide-content">    
+        <p style="letter-spacing: 2px; text-transform: uppercase; color: #666;">
+            ${summary.year}
+        </p>
+
+        <h1>Your year in reading...</p>
+        <p class="big-number">${summary.total_books}</p>
+        <p class="subtitle">total books read</p>
+
+        <div style="margin-top: 60px;">
+            <p class="big-number" style="font-size:64px;">
+            ${summary.pages_read}
+            </p>
+            <p class="subtitle">totalpages read</p>
+        </div>
+        </div>
+    </div>
+  `;
+}
+
+function renderBookends(summary) {
+  document.getElementById("slide-bookends").innerHTML = `
+  <div class="summary-card">
+    <div class="slide-content">
+      <h2>Bookends</h2>
+      <p><b>First Book of the Year:</b><br> 
+        ${summary.first_book.title} by ${summary.first_book.author}
+        (${summary.first_book.pages} pages, read in ${summary.first_book.month})
+      </p>
+      <p><b>Last Book of the Year:</b><br> 
+        ${summary.last_book.title} by ${summary.last_book.author}
+        (${summary.last_book.pages} pages, read in ${summary.last_book.month})
+      </p>
+      <p><b>Longest Book of the Year:</b><br> 
+        ${summary.longest_book.title} by ${summary.longest_book.author}
+        (${summary.longest_book.pages} pages, read in ${summary.longest_book.month})
+      </p>
+      <p><b>Shortest Book of the Year:</b><br> 
+        ${summary.shortest_book.title} by ${summary.shortest_book.author}
+        (${summary.shortest_book.pages} pages, read in ${summary.shortest_book.month})
+      </p>
+    </div>
+  </div>
+  `
+}
+
+    function renderMonths(monthly) {
+      const monthCards = monthly.map(m => `
+        <div class="month-card">
+          <h3>${m.month}</h3>
+
+          <div class="month-stat">
+            <span class="label">Books Read</span>
+            <span class="value">${m.books_read}</span>
+          </div>
+          <div class="month-stat">
+            <span class="label">Pages Read</span>
+            <span class="value">${m.pages_read}</span>
+          </div>
+
+          <div class="month-stat">
+            <span class="label">Number of Five Star Reviews</span>
+            <span class="value">${m.five_star_books}</span>
+          </div>
+
+          <div class="month-stat">
+            <span class="label">Percentage of Five Star Books</span>
+            <span class="value">${m.five_star_percentage}%</span>
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("slide-months").innerHTML = `
+        <div class="slide-content">
+          <h2>Your reading year, month by month</h2>
+          <div class="month-grid">
+            ${monthCards}
+          </div>
+        </div>
+      `;
+    }
+
+      function renderReadingPeaks(peaks) {
+        document.getElementById("slide-peaks").innerHTML = `
+        <div class="summary-card">
+          <div class="slide-content">
+            <h2>Reading Peaks (and valleys)</h2>
+            <p><b>Month That You Read The Most Books:</b> ${peaks.reading_peaks.most_books.month} (${peaks.reading_peaks.most_books.count})</p>
+            <p><b>Month That You Read The Most Pages:</b> ${peaks.reading_peaks.most_pages.month} (${peaks.reading_peaks.most_pages.pages})</p>
+            <p><b>Month That You Read The Least Books:</b> ${peaks.reading_peaks.least_books.month} (${peaks.reading_peaks.least_books.count})</p>
+            <p><b>Month That You Read The Least Pages:</b> ${peaks.reading_peaks.least_pages.month} (${peaks.reading_peaks.least_pages.pages})</p>
+          </div>
+        </div>
+      `;
+      }
+
+      function renderRatingPeaks(peaks) {
+        document.getElementById("slide-ratings").innerHTML = `
+        <div class="summary-card">
+          <div class="slide-content">
+            <h2>Rating Peaks (and valleys)</h2>
+            <p><b>Month With The Most 5 Star Reviews:</b> ${peaks.rating_peaks.most_five_star.month} (${peaks.rating_peaks.most_five_star.five_star_count})</p>
+            <p><b>Month With The Highest Percentage of 5 Star Reviews:</b> ${peaks.rating_peaks.highest_percentage.month} (${peaks.rating_peaks.highest_percentage.five_star_percentage}%)</p>
+            </div>
+            </div>
+            `;
+      }
+
+      function renderFiveStarBooks(list) {
+        const items = list.five_star_books.map(b => `
+        <li>${b.title} by ${b.author} (${b.pages} pages) read in ${b.month}</li>
+        `).join("");
+
+        document.getElementById("slide-five-stars").innerHTML = `
+        <div class="summary-card">
+          <div class="slide-content">
+            <h2>5 Star Books</h2>
+            <ul>
+            ${items}
+            </ul>
+            </div>
+            </div>
+            `;
+      }
+
+      let currentSlide = 0;
+      let slides = [];
+
+      function initSlides() {
+        slides = Array.from(document.querySelectorAll(".slide"));
+        slides.forEach(s => s.classList.remove("active"));
+        slides[0].classList.add("active");
+      }
+
+      function showSlide(index) {
+        if (index < 0 || index >= slides.length) return;
+
+        slides[currentSlide].classList.remove("active");
+        slides[index].classList.add("active");
+        currentSlide = index;
+      }
+
+      document.getElementById("nextBtn").addEventListener("click", () => {
+      showSlide(currentSlide + 1);
+      });
+      document.getElementById("prevBtn").addEventListener("click", () => {
+      showSlide(currentSlide -1);
+      });
+    
+
+  </script>
+
+</body>
+</html>
