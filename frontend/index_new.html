@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goodreads Wrapped</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: radial-gradient(white, rgb(255, 179, 194));
+      color: #222;
+    }
+
+    #landing {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: opacity 0.8s ease;
+    }
+
+    #landing.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: rgba(21, 173, 255, 0.25) 0px 25px 50px -12px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      background: #d15497;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    
+    }
+    
+    #uploadBtn:hover {
+        background-color: #f585c1;
+        transform: scale(1.03)
+    }
+    #uploadBtn:active {
+        background-color: #fccae4;
+        transform: scale(1.07)
+    }
+
+    /* ---------- WRAPPED ---------- */
+    #wrapped {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .summary-card {
+    background: rgba(255, 255, 255, 0.718);
+    padding: 60px 60px;
+    border-radius: 16px;
+    box-shadow: rgba(205, 219, 255, 0.56) 0px 22px 70px 4px;
+    
+    }
+
+    #slide-months {
+        margin-top: 100vh;
+    }
+    #wrapped.visible {
+      opacity: 1;
+    }
+
+    .slide {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .slide-content {
+      max-width: 800px;
+      text-align: center;
+    }
+
+    .big-number {
+      font-size: 96px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 24px;
+      margin-top: 10px;
+      color: #555;
+    }
+
+    /* ---------- MONTH GRID ---------- */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .month-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+
+    .month-card h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+    <div id="landing">
+        <div class="upload-box">
+            <H1>Goodreads Wrapped</H1>
+            <p>Upload your Goodreads CSV to view your year in books</p>
+
+            <input type="file" id="csvInput" accept=".csv" />
+            <br />
+            <button id="uploadBtn">Create My Wrapped</button>
+        </div>
+    </div>
+
+    <div id="wrapped">
+        <div id="year-summary"></div>
+        <div id="reading-peaks"></div>
+        <div id="rating-summary"></div>
+        <div id="five-star-books"></div>
+        <div id="bookends"></div>
+        <div id="monthly-overview"></div>
+    </div>
+
+    <script>
+    
+           //mock data
+    //         const mockData = {
+    //  total_books: 42,
+    //   pages_read: 15890,
+    //   avg_rating: 4.3,
+    //   num_five_star: 18,
+    //   five_star_percentage: 43,
+
+    //   most_books: { month: "March", count: 7 },
+    //   most_pages: { month: "August", pages: 3200 },
+
+    //   most_five_star: { month: "June", five_star_count: 5 },
+    //   highest_percentage: { month: "January", five_star_percentage: 75 },
+
+    //   first_book: {
+    //     title: "First Book",
+    //     author: "Author A",
+    //     pages: 210,
+    //     month: "January"
+    //   },
+    //   last_book: {
+    //     title: "Last Book",
+    //     author: "Author B",
+    //     pages: 350,
+    //     month: "December"
+    //   },
+    //   longest_book: {
+    //     title: "Longest Book",
+    //     author: "Author C",
+    //     pages: 900,
+    //     month: "August"
+    //   },
+    //   shortest_book: {
+    //     title: "Shortest Book",
+    //     author: "Author D",
+    //     pages: 85,
+    //     month: "April"
+    //   },
+
+    //   monthly_stats: [
+    //     { month: "January", books_read: 3, pages_read: 900, five_star_books: 2 },
+    //     { month: "February", books_read: 4, pages_read: 1200, five_star_books: 1 }
+    //   ],
+
+
+    //   five_star_books: [
+    //     { title: "The Midnight Library", author: "Matt Haig", pages: 304, month: "January" },
+    //     { title: "The Silent Patient", author: "Alex Michaelides", pages: 336, month: "February" },
+    //     { title: "The Invisible Life of Addie LaRue", author: "V.E. Schwab", pages: 448, month: "March" },
+    //     { title: "The Night Circus", author: "Erin Morgenstern", pages: 387, month: "June" },
+    //     { title: "Where the Crawdads Sing", author: "Delia Owens", pages: 368, month: "July" }
+    //   ]
+    // };
+        
+        function renderYearSummary(data) {
+            document.getElementById("year-summary").innerHTML = `
+            <h2>Year Summary</h2>
+            <p>Total books read: <b>${data.total_books}</b></p>
+            <p>Total pages read: <b>${data.pages_read}</b></p>
+            <p>Average rating: <b>${data.avg_rating}</b></p>
+            <p>5-star reviews: <b>${data.num_five_star}</b> (${data.five_star_percentage}%)</p>
+        `;
+        }
+
+
+        function renderReadingPeaks(data) {
+            document.getElementById("reading-peaks").innerHTML = `
+            <h2>Reading Peaks</h2>
+            <p>Month with most books read: ${data.most_books.month} (${data.most_books.count})</p>
+            <p>Month with most pages read: ${data.most_pages.month} (${data.most_pages.pages})</p>
+            `;
+        }
+        
+        function renderRatingSummary(data) {
+            document.getElementById("rating-summary").innerHTML = `
+            <h2>Ratings</h2>
+            <p>Number of 5 Star Reviews: ${data.num_five_star}</p>
+            <p>Percentage of Five Star Reviews: ${data.five_star_percentage}%</p>
+
+            <p>Month with the most 5★ reviews: 
+            <b>${data.most_five_star.month}</b> 
+            (${data.most_five_star.five_star_count})
+            </p>
+            <p>Month with the highest % of 5★ reviews: 
+            <b>${data.highest_percentage.month}</b> 
+            (${data.highest_percentage.five_star_percentage}%)
+            </p>
+            `;
+        }
+        
+        function renderBookends(data) {
+            document.getElementById("bookends").innerHTML = `
+            <h2>Bookends</h2>
+            <p>
+            First book: <b>${data.first_book.title}</b> by ${data.first_book.author} 
+            (${data.first_book.pages} pages) read in ${data.first_book.month}
+            </p>
+
+            <p>
+            Last book: <b>${data.last_book.title}</b> by ${data.last_book.author} 
+            (${data.last_book.pages} pages) read in ${data.last_book.month}
+            </p>
+
+            <p>
+            Longest book: <b>${data.longest_book.title}</b> by ${data.longest_book.author} 
+            (${data.longest_book.pages} pages) read in ${data.longest_book.month}
+            </p>
+
+            <p>
+            Shortest book: <b>${data.shortest_book.title}</b> by ${data.shortest_book.author} 
+            (${data.shortest_book.pages} pages) read in ${data.shortest_book.month}
+            </p>
+        `;
+        }
+
+        function renderMonthlyOverview(monthly) {
+        const monthCards = monthly.map(m => `
+            <div class="month-card">
+            <h3>${m.month}</h3>
+            <p><b>Books:</b> ${m.books_read}</p>
+            <p><b>Pages:</b> ${m.pages_read}</p>
+            <p><b>5★ Reviews:</b> ${m.five_star_books}</p>
+            </div>
+        `).join("");
+
+        document.getElementById("monthly-overview").innerHTML = `
+            <h2>Monthly Overview</h2>
+            <div class="month-grid">
+            ${monthCards}
+            </div>
+        `;
+        }
+
+        function renderFiveStarBooks(data) {
+            const listItems = data.five_star_books.map(b => `
+                <li>
+                <b>${b.title}</b> by ${b.author}, ${b.pages} pages, read in ${b.month}
+                </li>
+            `).join("");
+
+            document.getElementById("five-star-books").innerHTML = `
+                <h2>5-Star Books</h2>
+                <ul>${listItems}</ul>
+            `;
+        }
+        function renderAll(data) {
+            renderYearSummary(data);
+            renderReadingPeaks(data);
+            renderRatingSummary(data);
+            renderBookends(data);
+            renderMonthlyOverview(data.monthly_stats);
+            renderFiveStarBooks(data);
+        }
+        function parseCSV(file, callback) {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const text = event.target.result;
+                const rows = text.split("\n").map(r => r.split(","));
+
+                const headers = rows[0].map(h => h.trim());
+                const data = rows.slice(1).filter(r => r.length === headers.length);
+
+                const objects = data.map(row => {
+                    const obj = {};
+                    headers.forEach((h, i) => {
+                        obj [h] = row[i]?.trim();
+                    });
+                    return obj;
+                });
+
+                callback(objects);
+            };
+            reader.readAsText(file);
+        }
+
+        function analyzeGoodreadsData(rows) {
+          if (!readBooks.length) {
+            return null;
+          }
+            const readBooks = rows.filter(
+                r => r["Exclusive Shelf"] === "read" && r["My Rating"]
+            );
+            const sortedByPages = [...readBooks].sort(
+              (a, b) => Number(a["Number of Pages"] || 0) - Number(b["Number of Pages"] || 0)
+            );
+
+            const totalBooks = readBooks.length;
+            const pagesRead = readBooks.reduce(
+                (sum, b) => sum + Number(b["Number of Pages"] || 0),
+                0
+            );
+
+            const fiveStarBooks = readBooks.filter(b => Number(b["My Rating"]) === 5);
+
+            const monthlyMap = {};
+
+            readBooks.forEach(b => {
+                const date = new Date(b["Date Read"] || b["Date Added"]);
+                if (isNaN(date)) return;
+                
+                const month = date.toLocaleString("default", { month: "long" });
+
+                if (!monthlyMap[month]) {
+                    monthlyMap[month] = {
+                        month,
+                        books_read: 0,
+                        pages_read: 0,
+                        five_star_books: 0
+                    };
+                }
+
+                monthlyMap[month].books_read++;
+                monthlyMap[month].pages_read += Number(b["Number of Pages"] || 0);
+                if (Number(b["My Rating"]) === 5) {
+                    monthlyMap[month].five_star_books++;
+                }
+            });
+
+            const monthlyStats = Object.values(monthlyMap);
+
+            return {
+                total_books: totalBooks,
+                pages_read: pagesRead,
+                avg_rating: (
+                    readBooks.reduce((s, b) => s + Number(b["My Rating"]), 0) / totalBooks
+                ).toFixed(2),
+                num_five_star: fiveStarBooks.length,
+                five_star_percentage: ((fiveStarBooks.length / totalBooks) * 100).toFixed(1),
+
+                most_books: monthlyStats.reduce((a, b) =>
+                b.books_read > a.books_read ? b : a,
+                { month: "N/A", books_read: 0}
+                ),
+
+                most_pages: monthlyStats.reduce((a, b) =>
+                b.pages_read > a.pages_read ? b : a,
+                { month: "N/A", pages_read: 0 }
+                ),
+
+                most_five_star: monthlyStats.reduce((a, b) =>
+                b.five_star_books > a.five_star_books ? b : a,
+                { month: "N/A", five_star_books: 0}
+                ),
+
+                highest_percentage: monthlyStats.reduce((a, b) => {
+                    const aPct = a.five_star_books / a.books_read || 0;
+                    const bPct = b.five_star_books / b.books_read || 0;
+                    return bPct > aPct ? {
+                        month: b.month,
+                        five_star_percentage: (bPct * 100).toFixed(1)
+                    } : a;
+                }, { month: "N/A", five_star_percentage: 0 }),
+
+                first_book: readBooks[0] && {
+                    title: readBooks[0].Title,
+                    author: readBooks[0].Author,
+                    pages: Number(readBooks[0]["Number of Pages"] || 0),
+                    month: new Date(readBooks[0]["Date Read"] || readBooks[0]["Date Added"])
+                    .toLocaleString("default", { month: "long" })
+                },
+
+                last_book: readBooks.at(-1) && {
+                    title: readBooks.at(-1).Title,
+                    author: readBooks.at(-1).Author,
+                    pages: Number(readBooks.at(-1)["Number of Pages"] || 0),
+                    month: new Date(readBooks.at(-1)["Date Read"] || readBooks.at(-1)["Date Added"])
+                    .toLocaleString("default", { month: "long" })
+                },
+                 
+                longest_book: sortedByPages.at(-1) && {
+                  title: sortedByPages.at(-1).Title,
+                  author: sortedByPages.at(-1).Author,
+                  pages: Number(sortedByPages.at(-1)["Number of Pages"] || 0),
+                  month: new Date(sortedByPages.at(-1)["Date Read"] || sortedByPages.at(-1)["Date Added"])
+                  .toLocaleString("default", { month: "long" })
+                },
+
+                shortest_book: sortedByPages[0] && {
+                  title: sortedByPages[0].Title,
+                  author: sortedByPages[0].Author,
+                  pages: Number(sortedByPages[0]["Number of Pages"] || 0),
+                  month: new Date(sortedByPages[0]["Date Read"] || sortedByPages[0]["Date Added"])
+                  .toLocaleString("default", { month: "long"})
+                },
+                
+                monthly_stats: monthlyStats,
+
+                five_star_books: fiveStarBooks.map(b => ({
+                    title: b.Title,
+                    author: b.Author,
+                    pages: Number(b["Number of Pages"] || 0),
+                    month: new Date(b["Date Read"] || b["Date Added"])
+                    .toLocaleString("default", { month: "long"})
+                }))
+            };
+        }
+
+    const uploadBtn = document.getElementById("uploadBtn");
+    const landing = document.getElementById("landing");
+    const wrapped = document.getElementById("wrapped");
+    const csvInput = document.getElementById("csvInput");
+    
+    csvInput.addEventListener("change", () => {
+        const file = csvInput.files[0];
+        if (!file) return;
+
+        console.log("CSV selected:", file.name)
+    });
+
+
+    uploadBtn.addEventListener("click", () => {
+        if (!csvInput.files.length) {
+            alert("Please upload your CSV file")
+            return;
+        }
+
+        const file = csvInput.files[0];
+
+        parseCSV(file, rows => {
+            const wrappedData = analyzeGoodreadsData(rows);
+            if(!wrappedData) {
+              alert("No read books found");
+              return;
+            }
+            
+            landing.classList.add("hidden");
+            setTimeout(() => {
+            wrapped.classList.add("visible");
+            }, 800);
+
+            renderAll(wrappedData)
+        });
+    });
+
+    </script>
+</body>
+</html>
