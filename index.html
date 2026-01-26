@@ -124,8 +124,9 @@
     #nav-controls {
       position: fixed;
       bottom: 30px;
-      right: 30px;
-      display: flex;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
       gap: 12px;
       z-index: 1000;
     }
@@ -139,6 +140,10 @@
       color: white;
       cursor: pointer;
       transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    #nav-controls.visible {
+      display: flex;
     }
 
     #nav-controls button:hover {
@@ -276,6 +281,8 @@
       setTimeout(() => {
         landing.style.display = "none";
         wrapped.classList.add("visible");
+        document.getElementById("nav-controls").classList.add("visible");
+
 
         renderSummary(data.year_summary);
         renderBookends(data.year_summary);
