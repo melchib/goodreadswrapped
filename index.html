@@ -24,7 +24,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      transition: opacity 0.8s ease;
+      transition: opacity 5s ease;
     }
 
     #landing.hidden {
@@ -59,43 +59,50 @@
         background-color: #fccae4;
         transform: scale(1.07)
     }
-
-    #loading {
+    #loading-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(255, 255, 255, 0.718);
-      display: none;
+      background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(6px);
-      align-items: center;
+      display: none;
+      align-items: cener;
       justify-content: center;
+
       z-index: 2000;
     }
-
-    #loading.visible {
+    #loading-overlay.visible{
       display: flex;
+      transition: 1s ease-in;
     }
-
+    .loader-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+    }
     .loader {
-      text-align: center;
-      font-family: Georgia, serif;
-    }
-
-    .loader::before {
-      content: "";
-      display: block;
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 20px;
+      width: 60px;
+      aspect-ratio: 1;
       border-radius: 50%;
-      border: 4px solid #f3c2da;
-      border-top-color: #d15497;
-      animation: spin 1s linear infinite;
+
+      flex: 0 0 auto;
+      align-self: center;
+
+      -webkit-mask:linear-gradient(0deg,#000 55%,#0000 0) bottom/100% 18.18%;
+      background:
+      linear-gradient(#f03355 0 0) bottom/100% 0% no-repeat
+      #ddd;
+      animation: l8 2s infinite steps(7);
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg)
-      }
+    @keyframes l8 {
+        100% {background-size:100% 115%}
+    }
+    .loading-text{
+      margin-top: 16px;
+      color: #555;
+      font-size: 16px;
     }
 
     /* ---------- WRAPPED ---------- */
@@ -105,7 +112,7 @@
       height: 100vh;
       overflow: hidden;
       opacity: 0;
-      transition: opacity 1s ease;
+      transition: opacity 3s ease;
     }
     .summary-card {
     background: rgba(255, 255, 255, 0.718);
@@ -241,6 +248,8 @@
       font-size: 20px;
       font-weight: bold;
     }
+    
+
   </style>
 </head>
 
@@ -278,17 +287,19 @@
     <button id="prevBtn">go back</button>
     <button id="nextBtn">continue</button>
   </div>
-
-  <div id="loading">
-    <div class="loader">
-      <p>Generating your report!......</p>
+  <div id="loading-overlay">
+    <div class="loader-wrapper">
+    <div class="loader"></div>
+    <p class="loading-text">Generating your report...</p>
     </div>
   </div>
+  
   <script>
     const uploadBtn = document.getElementById("uploadBtn");
     const fileInput = document.getElementById("csvFile");
     const landing = document.getElementById("landing");
     const wrapped = document.getElementById("wrapped");
+    const loadingOverlay = document.getElementById("loading-overlay");
 
     uploadBtn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -299,33 +310,38 @@
         return;
       }
 
-      const formData = new FormData();
-      formData.append("file", file);
+      loadingOverlay.classList.add("visible");
 
-      const response = await fetch("https://goodreadswrappeduvicorn-main-app-host-0.onrender.com/upload", {
+      try{
+        const formData = new FormData();
+        formData.append("file", file);
 
+        const response = await fetch("https://goodreadswrappeduvicorn-main-app-host-0.onrender.com/upload", {
         method: "POST",
         body: formData,
+
       });
 
       const data = await response.json();
       if (!response.ok) {
-        alert(data.detail || "Error");
-        return;
+        throw new Error(data.detail || "Error");
       }
-
       showWrapped(data);
+    } catch(err) {
+      alert(err.message);
+    }
     });
 
     function showWrapped(data) {
-      // Fade out landing
       landing.classList.add("hidden");
 
       setTimeout(() => {
         landing.style.display = "none";
+
         wrapped.classList.add("visible");
         document.getElementById("nav-controls").classList.add("visible");
 
+        loadingOverlay.classList.remove("visible");
 
         renderSummary(data.year_summary);
         renderBookends(data.year_summary);
