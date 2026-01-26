@@ -212,7 +212,7 @@
 
       <input type="file" id="csvFile" accept=".csv" />
       <br>
-      <button id="uploadBtn">Generate Wrapped</button>
+      <button id="uploadBtn" type="button"">Generate Wrapped</button>
       <br><br>
       <a href="https://help.goodreads.com/s/article/How-do-I-import-or-export-my-books-1553870934590">instructions on how to access your goodreads CSV</a>
 
@@ -243,6 +243,8 @@
     const wrapped = document.getElementById("wrapped");
 
     uploadBtn.addEventListener("click", async () => {
+      e.preventDefault();
+
       const file = fileInput.files[0];
       if (!file) {
         alert("Please choose a CSV file.");
@@ -252,7 +254,7 @@
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("https://goodreadswrappeduvicorn-main-app-host-0.onrender.com", {
+      const response = await fetch("https://goodreadswrappeduvicorn-main-app-host-0.onrender.com/upload", {
 
         method: "POST",
         body: formData,
