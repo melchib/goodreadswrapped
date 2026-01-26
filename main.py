@@ -17,13 +17,6 @@ app.add_middleware(
 )
 
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],   # allow all origins
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
     if file.content_type !="text/csv":
