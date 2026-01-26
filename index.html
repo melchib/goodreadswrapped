@@ -119,8 +119,22 @@
     padding: 60px 60px;
     border-radius: 16px;
     box-shadow: rgba(205, 219, 255, 0.56) 0px 22px 70px 4px;
-    
+  
     }
+
+    .summary-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .summary-column {
+    flex: 1;
+    min-width: 280px;
+  }
+
     #wrapped.visible {
       opacity: 1;
     }
@@ -264,7 +278,8 @@
 
       <input type="file" id="csvFile" accept=".csv" />
       <br>
-      <button id="uploadBtn" type="button"">Generate Wrapped</button>
+      <button id="uploadBtn" type="button">Generate Wrapped</button>
+      <button id="reportBtn" type="button">Skip to Report</button>
       <br><br>
       <a href="https://help.goodreads.com/s/article/How-do-I-import-or-export-my-books-1553870934590">instructions on how to access your goodreads CSV</a>
 
@@ -291,11 +306,14 @@
     <div class="loader-wrapper">
     <div class="loader"></div>
     <p class="loading-text">Generating your report...</p>
+    <p class="loading-text">This may take a few minutes</p>
     </div>
   </div>
   
   <script>
+    let wrappedData = null;
     const uploadBtn = document.getElementById("uploadBtn");
+    const reportBtn = document.getElementById("reportBtn");
     const fileInput = document.getElementById("csvFile");
     const landing = document.getElementById("landing");
     const wrapped = document.getElementById("wrapped");
@@ -323,6 +341,7 @@
       });
 
       const data = await response.json();
+      wrappedData = data;
       if (!response.ok) {
         throw new Error(data.detail || "Error");
       }
@@ -345,12 +364,16 @@
 
         renderSummary(data.year_summary);
         renderBookends(data.year_summary);
-        renderMonths(data.monthly_stats);
+        renderMonths(data.monthly_stats, data.year_summary);
         renderReadingPeaks(data)
         renderRatingPeaks(data);
         renderFiveStarBooks(data);
 
         initSlides();
+
+        if(skipToLast) {
+          showSlide(slides.length -1);
+        }
       }, 800);
     }
 
@@ -403,41 +426,67 @@ function renderBookends(summary) {
   `
 }
 
-    function renderMonths(monthly) {
-      const monthCards = monthly.map(m => `
-        <div class="month-card">
-          <h3>${m.month}</h3>
+   function renderMonths(monthly, summary) {
+  const monthCards = monthly.map(m => `
+    <div class="month-card">
+      <h3>${m.month}</h3>
 
-          <div class="month-stat">
-            <span class="label">Books Read</span>
-            <span class="value">${m.books_read}</span>
-          </div>
-          <div class="month-stat">
-            <span class="label">Pages Read</span>
-            <span class="value">${m.pages_read}</span>
-          </div>
+      <div class="month-stat">
+        <span class="label">Books Read</span>
+        <span class="value">${m.books_read}</span>
+      </div>
+      <div class="month-stat">
+        <span class="label">Pages Read</span>
+        <span class="value">${m.pages_read}</span>
+      </div>
 
-          <div class="month-stat">
-            <span class="label">Number of Five Star Reviews</span>
-            <span class="value">${m.five_star_books}</span>
-          </div>
+      <div class="month-stat">
+        <span class="label">Number of Five Star Reviews</span>
+        <span class="value">${m.five_star_books}</span>
+      </div>
 
-          <div class="month-stat">
-            <span class="label">Percentage of Five Star Books</span>
-            <span class="value">${m.five_star_percentage}%</span>
-          </div>
+      <div class="month-stat">
+        <span class="label">Percentage of Five Star Books</span>
+        <span class="value">${m.five_star_percentage}%</span>
+      </div>
+    </div>
+  `).join("");
+
+  document.getElementById("slide-months").innerHTML = `
+    <div class="slide-content">
+      <div class="summary-card">
+        <p style="letter-spacing: 2px; text-transform: uppercase; color: #666;">
+          ${summary.year}
+        </p>
+
+        <h2>Your year in reading</h2>
+
+        <p class="big-number">${summary.total_books}</p>
+        <p class="subtitle">total books read</p>
+
+        <div style="margin-top: 40px;">
+          <p class="big-number" style="font-size:64px;">
+            ${summary.pages_read}
+          </p>
+          <p class="subtitle">total pages read</p>
         </div>
-      `).join("");
-
-      document.getElementById("slide-months").innerHTML = `
-        <div class="slide-content">
-          <h2>Your reading year, month by month</h2>
-          <div class="month-grid">
-            ${monthCards}
-          </div>
+        
+        <div style="margin-top: 30px; text-align:left;">
+          <p><b>First book:</b> ${summary.first_book.title} by ${summary.first_book.author}</p>
+          <p><b>Last book:</b> ${summary.last_book.title} by ${summary.last_book.author}</p>
+          <p><b>Longest book:</b> ${summary.longest_book.title} by ${summary.longest_book.author}</p>
+          <p><b>Shortest book:</b> ${summary.shortest_book.title} by ${summary.shortest_book.author}</p>
         </div>
-      `;
-    }
+      </div>
+
+      <h2 style="margin-top: 40px;">Your reading year, month by month</h2>
+      <div class="month-grid">
+        ${monthCards}
+      </div>
+    </div>
+  `;
+}
+
 
       function renderReadingPeaks(peaks) {
         document.getElementById("slide-peaks").innerHTML = `
@@ -506,7 +555,7 @@ function renderBookends(summary) {
       showSlide(currentSlide -1);
       });
     
-
+      
   </script>
 
 </body>
