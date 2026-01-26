@@ -242,7 +242,7 @@
     const landing = document.getElementById("landing");
     const wrapped = document.getElementById("wrapped");
 
-    uploadBtn.addEventListener("click", async () => {
+    uploadBtn.addEventListener("click", async (e) => {
       e.preventDefault();
 
       const file = fileInput.files[0];
