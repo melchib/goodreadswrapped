@@ -195,7 +195,8 @@
       padding-right: 1rem;
     }
     #slide-months .slide-content {
-        padding-bottom: 1rem;
+        padding-bottom: 20px;
+        height: 100%;
     }
 
     #slide-months .slide-content::-webkit-scrollbar {

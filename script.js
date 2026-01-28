@@ -1,4 +1,4 @@
-const uploadBtn = document.getElementById("uploadBtn");
+  const uploadBtn = document.getElementById("uploadBtn");
     const reportBtn = document.getElementById("reportBtn");
     const fileInput = document.getElementById("csvFile");
     const landing = document.getElementById("landing");
@@ -43,9 +43,8 @@ const uploadBtn = document.getElementById("uploadBtn");
         landing.style.display = "none";
 
         wrapped.classList.add("visible");
-        document.getElementById("nav-controls").classList.add("visible");
-
         loadingOverlay.classList.remove("visible");
+        // document.getElementById("nav-controls").classList.add("visible");
 
         renderSummary(data.year_summary);
         renderBookends(data.year_summary);
@@ -54,7 +53,7 @@ const uploadBtn = document.getElementById("uploadBtn");
         renderRatingPeaks(data);
         renderFiveStarBooks(data);
 
-        initSlides();
+        initSlides(5);
       }, 800);
     }
 
@@ -260,10 +259,11 @@ function renderBookends(summary) {
       let currentSlide = 0;
       let slides = [];
 
-      function initSlides() {
+      function initSlides(startIndex = 0) {
         slides = Array.from(document.querySelectorAll(".slide"));
         slides.forEach(s => s.classList.remove("active"));
-        slides[0].classList.add("active");
+        slides[startIndex].classList.add("active");
+        currentSlide = startIndex;
       }
 
       function showSlide(index) {
@@ -274,14 +274,14 @@ function renderBookends(summary) {
         currentSlide = index;
       }
 
-      document.getElementById("nextBtn").addEventListener("click", () => {
-      showSlide(currentSlide + 1);
-      });
-      document.getElementById("reportBtn").addEventListener("click", () => {
-      showSlide(5);
-      });
-      document.getElementById("prevBtn").addEventListener("click", () => {
-      showSlide(currentSlide -1);
-      });
+      // document.getElementById("nextBtn").addEventListener("click", () => {
+      // showSlide(currentSlide + 1);
+      // });
+      // document.getElementById("reportBtn").addEventListener("click", () => {
+      // showSlide(5);
+      // });
+      // document.getElementById("prevBtn").addEventListener("click", () => {
+      // showSlide(currentSlide -1);
+      // });
     
       
