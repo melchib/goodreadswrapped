@@ -1,4 +1,4 @@
-html, body {
+    html, body {
       height: 100%;
       overflow: hidden;
       background-color: #ffebf6;
@@ -145,6 +145,8 @@ html, body {
     flex: 1;
     text-align: center;
     justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
   }
 
     #wrapped.visible {
@@ -205,7 +207,7 @@ html, body {
       border-radius: 4px;
     }
     .book-grid {
-        display: flex;
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 5px;
     }

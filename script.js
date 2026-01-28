@@ -49,7 +49,7 @@ const uploadBtn = document.getElementById("uploadBtn");
 
         renderSummary(data.year_summary);
         renderBookends(data.year_summary);
-        renderMonths(data.monthly_stats, data.year_summary);
+        renderMonths(data.monthly_stats, data.year_summary, data);
         renderReadingPeaks(data)
         renderRatingPeaks(data);
         renderFiveStarBooks(data);
@@ -107,7 +107,7 @@ function renderBookends(summary) {
   `
 }
 
-   function renderMonths(monthly, summary) {
+   function renderMonths(monthly, summary, peaks) {
   const monthCards = monthly.map(m => `
     <div class="month-card">
       <h3>${m.month}</h3>
@@ -166,36 +166,50 @@ function renderBookends(summary) {
                 <p class="subtitle">Number of Five Star Books</p>
             </div>
         </div>
-        <div class="slide-content">
+        <div class="summary-stats">
             <div class="summary-card book-grid">
                 <div class="book-item">
-                    <p><b>First book:</b> <br>
+                    <p class ="subtitle"><b>First book:</b> <br>
                     ${summary.first_book.title}<br> by ${summary.first_book.author}<br> 
                     -- <i>Read in ${summary.first_book.month}</i></p>
                 </div>
                 <div class="book-item">
-                    <p><b>Last book:</b> <br>
+                    <p class ="subtitle"><b>Last book:</b> <br>
                     ${summary.last_book.title}<br> by ${summary.last_book.author}<br> 
                     -- <i>Read in ${summary.last_book.month}</i></p>
                 </div>
                 <div class="book-item">
-                    <p><b>Longest book:</b><br> 
+                    <p class ="subtitle"><b>Longest book:</b><br> 
                     ${summary.longest_book.title}<br> by ${summary.longest_book.author}<br> 
                     -- <i>Read in ${summary.longest_book.month}</i></p>
                 </div>
                 <div class="book-item">
-                    <p><b>Shortest book:</b> <br>
+                    <p class ="subtitle"><b>Shortest book:</b> <br>
                     ${summary.shortest_book.title}<br> by ${summary.shortest_book.author}<br> 
                     -- <i>Read in ${summary.shortest_book.month}</i></p>
                 </div>
-
             </div>
         </div>
-       <div class="slide-content">
-        <h2 >Your reading year, month by month</h2>
+        <h2>Reading Peaks (and valleys)</h2>
+        <div class="summary-stats">
+            <div class="summary-card book-grid">
+                <div class="book-item">
+                    <p><b>Month That You Read The Most Books:</b> ${peaks.reading_peaks.most_books.month} (${peaks.reading_peaks.most_books.count})</p>
+                </div>
+                <div class="book-item">
+                    <p><b>Month That You Read The Most Pages:</b> ${peaks.reading_peaks.most_pages.month} (${peaks.reading_peaks.most_pages.pages})</p>
+                </div>
+                <div class="book-item">
+                    <p><b>Month That You Read The Least Books:</b> ${peaks.reading_peaks.least_books.month} (${peaks.reading_peaks.least_books.count})</p>
+                </div>
+                <div class="book-item">
+                    <p><b>Month That You Read The Least Pages:</b> ${peaks.reading_peaks.least_pages.month} (${peaks.reading_peaks.least_pages.pages})</p>
+                </div>
+            </div>
+        </div>
+                <h2 >Your reading year, month by month</h2>
         <div class="month-grid">
             ${monthCards}
-        </div>
         </div>
     </div>
   `;
