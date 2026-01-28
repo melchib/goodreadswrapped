@@ -136,34 +136,67 @@ function renderBookends(summary) {
   document.getElementById("slide-months").innerHTML = `
     <div class="slide-content">
       <div class="summary-card">
-        <p style="letter-spacing: 2px; text-transform: uppercase; color: #666;">
+        <p style="letter-spacing: 4px; text-transform: uppercase; color: #666;">
           ${summary.year}
         </p>
+        <h2 class="title">Your year in reading</h2>
+      </div>
+        <div class="summary-columns">
+            <div class="summary-stats">
+                <p class="big-number">${summary.total_books}</p>
+                <p class="subtitle">total books read</p>
 
-        <h2>Your year in reading</h2>
-
-        <p class="big-number">${summary.total_books}</p>
-        <p class="subtitle">total books read</p>
-
-        <div style="margin-top: 40px;">
-          <p class="big-number" style="font-size:64px;">
-            ${summary.pages_read}
-          </p>
-          <p class="subtitle">total pages read</p>
-        </div>
+                    <div style="margin-top: 40px;">
+                        <p class="big-number" style="font-size:64px;">
+                        ${summary.pages_read}
+                        </p>
+                        <p class="subtitle">total pages read</p>
+                    </div>
+            </div>
         
-        <div style="margin-top: 30px; text-align:left;">
-          <p><b>First book:</b> ${summary.first_book.title} by ${summary.first_book.author}</p>
-          <p><b>Last book:</b> ${summary.last_book.title} by ${summary.last_book.author}</p>
-          <p><b>Longest book:</b> ${summary.longest_book.title} by ${summary.longest_book.author}</p>
-          <p><b>Shortest book:</b> ${summary.shortest_book.title} by ${summary.shortest_book.author}</p>
+            <div class="summary-stats">
+            
+                <p class="big-number stat-number">
+                    ${summary.avg_rating}
+                </p>
+                <p class="subtitle">Average Rating</p>
+                    <p class="big-number stat-number">
+                        ${summary.num_five_star}
+                    </p>
+                <p class="subtitle">Number of Five Star Books</p>
+            </div>
         </div>
-      </div>
+        <div class="slide-content">
+            <div class="summary-card book-grid">
+                <div class="book-item">
+                    <p><b>First book:</b> <br>
+                    ${summary.first_book.title}<br> by ${summary.first_book.author}<br> 
+                    -- <i>Read in ${summary.first_book.month}</i></p>
+                </div>
+                <div class="book-item">
+                    <p><b>Last book:</b> <br>
+                    ${summary.last_book.title}<br> by ${summary.last_book.author}<br> 
+                    -- <i>Read in ${summary.last_book.month}</i></p>
+                </div>
+                <div class="book-item">
+                    <p><b>Longest book:</b><br> 
+                    ${summary.longest_book.title}<br> by ${summary.longest_book.author}<br> 
+                    -- <i>Read in ${summary.longest_book.month}</i></p>
+                </div>
+                <div class="book-item">
+                    <p><b>Shortest book:</b> <br>
+                    ${summary.shortest_book.title}<br> by ${summary.shortest_book.author}<br> 
+                    -- <i>Read in ${summary.shortest_book.month}</i></p>
+                </div>
 
-      <h2 style="margin-top: 40px;">Your reading year, month by month</h2>
-      <div class="month-grid">
-        ${monthCards}
-      </div>
+            </div>
+        </div>
+       <div class="slide-content">
+        <h2 >Your reading year, month by month</h2>
+        <div class="month-grid">
+            ${monthCards}
+        </div>
+        </div>
     </div>
   `;
 }
@@ -229,6 +262,9 @@ function renderBookends(summary) {
 
       document.getElementById("nextBtn").addEventListener("click", () => {
       showSlide(currentSlide + 1);
+      });
+      document.getElementById("reportBtn").addEventListener("click", () => {
+      showSlide(5);
       });
       document.getElementById("prevBtn").addEventListener("click", () => {
       showSlide(currentSlide -1);

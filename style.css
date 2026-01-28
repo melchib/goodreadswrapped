@@ -1,6 +1,7 @@
 html, body {
       height: 100%;
       overflow: hidden;
+      background-color: #ffebf6;
     }
 
       body {
@@ -42,11 +43,11 @@ html, body {
     
     }
     
-    #uploadBtn:hover {
+    button:hover {
         background-color: #f585c1;
         transform: scale(1.03)
     }
-    #uploadBtn:active {
+    button:active {
         background-color: #fccae4;
         transform: scale(1.07)
     }
@@ -90,6 +91,7 @@ html, body {
     @keyframes l8 {
         100% {background-size:100% 115%}
     }
+
     .loading-text{
       margin-top: 16px;
       color: #555;
@@ -107,23 +109,42 @@ html, body {
     }
     .summary-card {
     background: rgba(255, 255, 255, 0.718);
-    padding: 60px 60px;
+    padding: 20px 20px;
     border-radius: 16px;
     box-shadow: rgba(205, 219, 255, 0.56) 0px 22px 70px 4px;
-  
+    margin-bottom: 0;
     }
 
     .summary-row {
     display: flex;
-    gap: 40px;
+    gap: 10px;
     align-items: flex-start;
     justify-content: center;
     flex-wrap: wrap;
   }
+  .title {
+    font-size: 30px;
 
-  .summary-column {
+  }
+  .summary-columns {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .summary-stats,
+  .summary-books {
+    background: white;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 0.644);
+    justify-content: center;
     flex: 1;
-    min-width: 280px;
+  }
+
+  .summary-stats {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
   }
 
     #wrapped.visible {
@@ -152,14 +173,27 @@ html, body {
       max-width: 1100px;
       text-align: center;
       margin: 0 auto;
-      padding: 4rem 2rem;
-    }
+      padding: 1rem 1rem;
 
+    }
+    .slide-content h2 {
+        margin: 0;
+        padding: 0;
+    }
+    .summary-card + h2 {
+        margin-top: 12px;
+    }
+    #slide-months {
+        align-items: flex-start;
+    }
     #slide-months .slide-content {
       scroll-behavior: smooth;
       height: calc(100vh - 8rem);
       overflow-y: auto;
       padding-right: 1rem;
+    }
+    #slide-months .slide-content {
+        padding-bottom: 1rem;
     }
 
     #slide-months .slide-content::-webkit-scrollbar {
@@ -170,7 +204,17 @@ html, body {
       background: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
     }
-
+    .book-grid {
+        display: flex;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+    .book-item {
+        background: white;
+        padding: 16px;
+        border-radius: 12px;
+        line-height: 1.4;
+    }
     #nav-controls {
       position: fixed;
       bottom: 30px;
@@ -213,10 +257,10 @@ html, body {
     } 
     /* ---------- MONTH GRID ---------- */
     .month-grid {
+      margin-top: 24px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 24px;
-      margin-top: 40px;
     }
 
     .month-card {
