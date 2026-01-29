@@ -1,4 +1,4 @@
-  const uploadBtn = document.getElementById("uploadBtn");
+    const uploadBtn = document.getElementById("uploadBtn");
     const reportBtn = document.getElementById("reportBtn");
     const fileInput = document.getElementById("csvFile");
     const landing = document.getElementById("landing");
@@ -46,65 +46,65 @@
         loadingOverlay.classList.remove("visible");
         // document.getElementById("nav-controls").classList.add("visible");
 
-        renderSummary(data.year_summary);
-        renderBookends(data.year_summary);
+        // renderSummary(data.year_summary);
+        // renderBookends(data.year_summary);
         renderMonths(data.monthly_stats, data.year_summary, data);
-        renderReadingPeaks(data)
-        renderRatingPeaks(data);
-        renderFiveStarBooks(data);
+        // renderReadingPeaks(data)
+        // renderRatingPeaks(data);
+        // renderFiveStarBooks(data);
 
         initSlides(5);
       }, 800);
     }
 
-function renderSummary(summary) {
-  document.getElementById("slide-summary").innerHTML = `
-    <div class="summary-card">
-        <div class="slide-content">    
-        <p style="letter-spacing: 2px; text-transform: uppercase; color: #666;">
-            ${summary.year}
-        </p>
+// function renderSummary(summary) {
+//   document.getElementById("slide-summary").innerHTML = `
+//     <div class="summary-card">
+//         <div class="slide-content">    
+//         <p style="letter-spacing: 2px; text-transform: uppercase; color: #666;">
+//             ${summary.year}
+//         </p>
 
-        <h1>Your year in reading...</p>
-        <p class="big-number">${summary.total_books}</p>
-        <p class="subtitle">total books read</p>
+//         <h1>Your year in reading...</p>
+//         <p class="big-number">${summary.total_books}</p>
+//         <p class="subtitle">total books read</p>
 
-        <div style="margin-top: 60px;">
-            <p class="big-number" style="font-size:64px;">
-            ${summary.pages_read}
-            </p>
-            <p class="subtitle">totalpages read</p>
-        </div>
-        </div>
-    </div>
-  `;
-}
+//         <div style="margin-top: 60px;">
+//             <p class="big-number" style="font-size:64px;">
+//             ${summary.pages_read}
+//             </p>
+//             <p class="subtitle">totalpages read</p>
+//         </div>
+//         </div>
+//     </div>
+//   `;
+// }
 
-function renderBookends(summary) {
-  document.getElementById("slide-bookends").innerHTML = `
-  <div class="summary-card">
-    <div class="slide-content">
-      <h2>Bookends</h2>
-      <p><b>First Book of the Year:</b><br> 
-        ${summary.first_book.title} by ${summary.first_book.author}
-        (${summary.first_book.pages} pages, read in ${summary.first_book.month})
-      </p>
-      <p><b>Last Book of the Year:</b><br> 
-        ${summary.last_book.title} by ${summary.last_book.author}
-        (${summary.last_book.pages} pages, read in ${summary.last_book.month})
-      </p>
-      <p><b>Longest Book of the Year:</b><br> 
-        ${summary.longest_book.title} by ${summary.longest_book.author}
-        (${summary.longest_book.pages} pages, read in ${summary.longest_book.month})
-      </p>
-      <p><b>Shortest Book of the Year:</b><br> 
-        ${summary.shortest_book.title} by ${summary.shortest_book.author}
-        (${summary.shortest_book.pages} pages, read in ${summary.shortest_book.month})
-      </p>
-    </div>
-  </div>
-  `
-}
+// function renderBookends(summary) {
+//   document.getElementById("slide-bookends").innerHTML = `
+//   <div class="summary-card">
+//     <div class="slide-content">
+//       <h2>Bookends</h2>
+//       <p><b>First Book of the Year:</b><br> 
+//         ${summary.first_book.title} by ${summary.first_book.author}
+//         (${summary.first_book.pages} pages, read in ${summary.first_book.month})
+//       </p>
+//       <p><b>Last Book of the Year:</b><br> 
+//         ${summary.last_book.title} by ${summary.last_book.author}
+//         (${summary.last_book.pages} pages, read in ${summary.last_book.month})
+//       </p>
+//       <p><b>Longest Book of the Year:</b><br> 
+//         ${summary.longest_book.title} by ${summary.longest_book.author}
+//         (${summary.longest_book.pages} pages, read in ${summary.longest_book.month})
+//       </p>
+//       <p><b>Shortest Book of the Year:</b><br> 
+//         ${summary.shortest_book.title} by ${summary.shortest_book.author}
+//         (${summary.shortest_book.pages} pages, read in ${summary.shortest_book.month})
+//       </p>
+//     </div>
+//   </div>
+//   `
+// }
 
    function renderMonths(monthly, summary, peaks) {
   const monthCards = monthly.map(m => `
