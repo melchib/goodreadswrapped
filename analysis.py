@@ -1,6 +1,8 @@
 def analyze_year(df, year=2025):
     import pandas as pd
 
+    start_date = pd.Timestamp(f"{year}-01-01")
+    end_date = pd.Timestamp(f"{year}-12-31")
     df["Date Read"] = pd.to_datetime(df["Date Read"], errors="coerce").dt.normalize()
     df["Date Added"] = pd.to_datetime(df["Date Added"], errors="coerce").dt.normalize()
 
@@ -24,15 +26,9 @@ def analyze_year(df, year=2025):
         ]
     ]
 
-    books_2025 = subset[
+    books_year = subset[
         (subset["Exclusive Shelf"] == "read")
-        & (
-            subset["Date Read"].between("2025-01-01", "2025-12-31")
-            | (
-                subset["Date Read"].isna()
-                & subset["Date Added"].between("2025-01-01", "2025-12-31")
-            )
-        )
+        (subset["Official Date Read"].between(start_date, end_date))
     ]
 
     months = [
@@ -42,7 +38,7 @@ def analyze_year(df, year=2025):
 
     monthly = []
     for m in months:
-        month_df = books_2025[books_2025["Month Name"] == m]
+        month_df = books_year[books_year["Month Name"] == m]
 
         books_read = len(month_df)
         pages_read = int(month_df["Number of Pages"].sum())
@@ -58,18 +54,18 @@ def analyze_year(df, year=2025):
         })
 
     # Year stats
-    YEARtotalBooks = len(books_2025)
-    YEARpagesRead = int(books_2025["Number of Pages"].sum())
-    YEARyourAvgRating = books_2025["My Rating"].mean()
-    YEARnumFiveStar = len(books_2025[books_2025["My Rating"] == 5])
+    YEARtotalBooks = len(books_year)
+    YEARpagesRead = int(books_year["Number of Pages"].sum())
+    YEARyourAvgRating = books_year["My Rating"].mean()
+    YEARnumFiveStar = len(books_year[books_year["My Rating"] == 5])
     YEARpercentFiveStar = (YEARnumFiveStar / YEARtotalBooks) * 100 if YEARtotalBooks else 0
 
 
     if YEARtotalBooks:
-        minPagesBook = books_2025.loc[books_2025["Number of Pages"].idxmin()]
-        maxPagesBook = books_2025.loc[books_2025["Number of Pages"].idxmax()]
-        first_book = books_2025.sort_values("Official Date Read").iloc[0]
-        last_book = books_2025.sort_values("Official Date Read").iloc[-1]
+        minPagesBook = books_year.loc[books_year["Number of Pages"].idxmin()]
+        maxPagesBook = books_year.loc[books_year["Number of Pages"].idxmax()]
+        first_book = books_year.sort_values("Official Date Read").iloc[0]
+        last_book = books_year.sort_values("Official Date Read").iloc[-1]
     else:
         minPagesBook = maxPagesBook = first_book = last_book = None
 
@@ -89,7 +85,7 @@ def analyze_year(df, year=2025):
     highest_percentage = max(monthly, key=lambda x: x["five_star_percentage"]) if monthly else None
 
 
-    five_star_books_list = books_2025[books_2025["My Rating"] == 5][["Title", "Author", "Number of Pages", "Month Name"]]
+    five_star_books_list = books_year[books_year["My Rating"] == 5][["Title", "Author", "Number of Pages", "Month Name"]]
 
     five_star_books = [
     {
@@ -98,7 +94,7 @@ def analyze_year(df, year=2025):
         "pages": int(row["Number of Pages"]),
         "month": row["Month Name"]
     }
-    for _, row in books_2025[books_2025["My Rating"] == 5][["Title", "Author", "Number of Pages", "Month Name"]].iterrows()
+    for _, row in books_year[books_year["My Rating"] == 5][["Title", "Author", "Number of Pages", "Month Name"]].iterrows()
 ]
 
 

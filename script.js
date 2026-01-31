@@ -1,3 +1,4 @@
+    const yearSelect = document.getElementById("years");
     const uploadBtn = document.getElementById("uploadBtn");
     const reportBtn = document.getElementById("reportBtn");
     const fileInput = document.getElementById("csvFile");
@@ -14,11 +15,17 @@
         return;
       }
 
+      const selectedYear = yearSelect.value;
+
+
       loadingOverlay.classList.add("visible");
 
       try{
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("year", selectedYear);
+
+        console.log("Selectred year:", selectedYear)
 
         const response = await fetch("https://goodreadswrappeduvicorn-main-app-host-0.onrender.com/upload", {
         method: "POST",
@@ -215,31 +222,31 @@
 }
 
 
-      function renderReadingPeaks(peaks) {
-        document.getElementById("slide-peaks").innerHTML = `
-        <div class="summary-card">
-          <div class="slide-content">
-            <h2>Reading Peaks (and valleys)</h2>
-            <p><b>Month That You Read The Most Books:</b> ${peaks.reading_peaks.most_books.month} (${peaks.reading_peaks.most_books.count})</p>
-            <p><b>Month That You Read The Most Pages:</b> ${peaks.reading_peaks.most_pages.month} (${peaks.reading_peaks.most_pages.pages})</p>
-            <p><b>Month That You Read The Least Books:</b> ${peaks.reading_peaks.least_books.month} (${peaks.reading_peaks.least_books.count})</p>
-            <p><b>Month That You Read The Least Pages:</b> ${peaks.reading_peaks.least_pages.month} (${peaks.reading_peaks.least_pages.pages})</p>
-          </div>
-        </div>
-      `;
-      }
+      // function renderReadingPeaks(peaks) {
+      //   document.getElementById("slide-peaks").innerHTML = `
+      //   <div class="summary-card">
+      //     <div class="slide-content">
+      //       <h2>Reading Peaks (and valleys)</h2>
+      //       <p><b>Month That You Read The Most Books:</b> ${peaks.reading_peaks.most_books.month} (${peaks.reading_peaks.most_books.count})</p>
+      //       <p><b>Month That You Read The Most Pages:</b> ${peaks.reading_peaks.most_pages.month} (${peaks.reading_peaks.most_pages.pages})</p>
+      //       <p><b>Month That You Read The Least Books:</b> ${peaks.reading_peaks.least_books.month} (${peaks.reading_peaks.least_books.count})</p>
+      //       <p><b>Month That You Read The Least Pages:</b> ${peaks.reading_peaks.least_pages.month} (${peaks.reading_peaks.least_pages.pages})</p>
+      //     </div>
+      //   </div>
+      // `;
+      // }
 
-      function renderRatingPeaks(peaks) {
-        document.getElementById("slide-ratings").innerHTML = `
-        <div class="summary-card">
-          <div class="slide-content">
-            <h2>Rating Peaks (and valleys)</h2>
-            <p><b>Month With The Most 5 Star Reviews:</b> ${peaks.rating_peaks.most_five_star.month} (${peaks.rating_peaks.most_five_star.five_star_count})</p>
-            <p><b>Month With The Highest Percentage of 5 Star Reviews:</b> ${peaks.rating_peaks.highest_percentage.month} (${peaks.rating_peaks.highest_percentage.five_star_percentage}%)</p>
-            </div>
-            </div>
-            `;
-      }
+      // function renderRatingPeaks(peaks) {
+      //   document.getElementById("slide-ratings").innerHTML = `
+      //   <div class="summary-card">
+      //     <div class="slide-content">
+      //       <h2>Rating Peaks (and valleys)</h2>
+      //       <p><b>Month With The Most 5 Star Reviews:</b> ${peaks.rating_peaks.most_five_star.month} (${peaks.rating_peaks.most_five_star.five_star_count})</p>
+      //       <p><b>Month With The Highest Percentage of 5 Star Reviews:</b> ${peaks.rating_peaks.highest_percentage.month} (${peaks.rating_peaks.highest_percentage.five_star_percentage}%)</p>
+      //       </div>
+      //       </div>
+      //       `;
+      // }
 
       function renderFiveStarBooks(list) {
         const items = list.five_star_books.map(b => `
@@ -266,13 +273,13 @@
         currentSlide = startIndex;
       }
 
-      function showSlide(index) {
-        if (index < 0 || index >= slides.length) return;
+      // function showSlide(index) {
+      //   if (index < 0 || index >= slides.length) return;
 
-        slides[currentSlide].classList.remove("active");
-        slides[index].classList.add("active");
-        currentSlide = index;
-      }
+      //   slides[currentSlide].classList.remove("active");
+      //   slides[index].classList.add("active");
+      //   currentSlide = index;
+      // }
 
       // document.getElementById("nextBtn").addEventListener("click", () => {
       // showSlide(currentSlide + 1);
